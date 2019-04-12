@@ -39,6 +39,9 @@ It is O(n) space because the resulting list has n+1 elements so O(n)
 >                                      in Node x t t
 >                       else Node x (balancedTree' x (q-1)) (balancedTree' x q)
 
+This is incorrect it does not give all permuations of the trees
+could use a permuation function to permutate trees by swapping around trees
+
 > balancedTrees' :: Int -> Int -> [Tree]
 
 > balancedTrees' x n  = let (q,r) = quotRem n 2
@@ -48,12 +51,12 @@ It is O(n) space because the resulting list has n+1 elements so O(n)
 >                                             rightTree = balancedTree' x <$> rightSide
 >                                             combinedSubtrees = zip leftTree rightTree
 >                                             in [Node x l r | (l,r) <- combinedSubtrees]
->                         else let leftSide  = [(q-1), (q)]
->                                  rightSide = [(q), (q-1)]
->                                  leftTree  = balancedTree' x <$> leftSide
->                                  rightTree = balancedTree' x <$> rightSide
->                                  combinedSubtrees = zip leftTree rightTree
->                                  in [Node x l r | (l,r) <- combinedSubtrees]  
+>                                    else let leftSide  = [(q-1), (q)]
+>                                             rightSide = [(q), (q-1)]
+>                                             leftTree  = balancedTree' x <$> leftSide
+>                                             rightTree = balancedTree' x <$> rightSide
+>                                             combinedSubtrees = zip leftTree rightTree
+>                                             in [Node x l r | (l,r) <- combinedSubtrees]  
 
 
 5.
