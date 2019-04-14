@@ -92,7 +92,7 @@ this is a function to take a tree and create an internalheap from its children
 >	deleteMin h = case isEmpty h of
 >                 True  -> Nothing
 >                 False -> Just (merge childrenHeap remainingHeap)
->                          where childrenHeap  = WrapHeap $ getIHeapFromChildren p
+>                          where childrenHeap  = WrapHeap . reverse $ getIHeapFromChildren p
 >                                remainingHeap = WrapHeap ts2
 >                                (p, ts2) = removeMinTree h
 
