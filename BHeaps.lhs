@@ -32,7 +32,23 @@
 >	insertTree t ts@(t2:ts2) = if (rank t) < (rank t2) then (t:ts)
 >                                                      else insertTree (link t t2) ts2 
 
+>	root (Node x _ ) = x
+
 >	getIHeap (WrapHeap h) = h
+
+
+
+>	removeMinTree (WrapHeap [t])    = (t, [])
+>	removeMinTree (WrapHeap (t:ts)) =  let (t', ts') = removeMinTree (WrapHeap ts)
+>                                      in if rootLess t t' then (t,ts) else (t', t:ts')
+
+Because of the implemenation it causes issues with deletemin because rank is not associated with an actual tree but a heap
+this is a function to take a tree and create an internalheap from its children
+
+>	getIHeapFromChildren :: (Rank, Tree) -> InternalHeap
+>	getIHeapFromChildren (r, (Node x ts) ) = treeFunctions <*> [topRank..0]
+>                                            where treeFunctions =  map ( \t r -> (r, t)) ts  
+>                                                  topRank       = r-1
 
 {-- External Interface --------------------------------------------------}
 
@@ -67,17 +83,18 @@
 >                                                                         heapsEqual = WrapHeap (insertTree (link t1 t2) (getIHeap $ merge (WrapHeap ts1) (WrapHeap ts2))) 
 
 >	findMin :: Heap -> Maybe Int
->	findMin h =
+>	findMin h =  case isEmpty h of
+>                True -> Nothing
+>                False -> let ((_,t), _) = removeMinTree h in Just $ root t
 
-  -- TODO
-
->		  Nothing
 
 >	deleteMin :: Heap -> Maybe Heap
->	deleteMin h =
+>	deleteMin h = case isEmpty h of
+>                 True  -> Nothing
+>                 False -> Just (merge childrenHeap remainingHeap)
+>                          where childrenHeap  = WrapHeap $ getIHeapFromChildren p
+>                                remainingHeap = WrapHeap ts2
+>                                (p, ts2) = removeMinTree h
 
-  -- TODO
-
->		  Nothing
 
 
