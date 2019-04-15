@@ -95,12 +95,14 @@ creates a list of heaps that has log(n) space
 
 3.3
 
+makepass calls merge on each list of merged pairs that mergepairs makes so in a series like this
+n/2 + n/4 + n/8 ... 1 this is O(n) 
 
 S(n,m) =  n/2 +  O(log(m))
 S(2,2) =  n/2 + O(1)	-- Since the base case is so different I did not really know what to do there.
 
 T(n,m) = T(n/2,m) + O(log(m)) -- T runs in n/2 half time because of merge pair running
-T(1,1) = 1
+T(1,m) = 1
 
 Analyzing S(n, m) O(logm) = x
 
@@ -120,7 +122,8 @@ T(n,m) = T(n/2^k, m) + O(log(m))
        = T(1, 1) + log(n)*log(m)
 	   = 1 + log(n) * log(m) 
 
- 
+ T(1,1) = 1 + 0
+
 
 
 
