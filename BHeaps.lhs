@@ -62,16 +62,6 @@ this is a function to take a tree and create an internalheap from its children
 >	insert x (WrapHeap ts) = WrapHeap (insertTree (0, Node x []) ts ) 
 
 
-  
-	data Tree = Node Int ([Tree])
-		deriving (Eq, Show)
-	type Rank = Int
-	type InternalHeap = [(Rank, Tree)]
-	data Heap = WrapHeap InternalHeap
-		deriving (Eq, Show)
-
-
-
 >	merge :: Heap -> Heap -> Heap
 >	merge h1@(WrapHeap t) h2@(WrapHeap []) = h1
 >	merge h1@(WrapHeap []) h2@(WrapHeap t)  = h2
