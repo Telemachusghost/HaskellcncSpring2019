@@ -99,9 +99,9 @@ makepass calls merge on each list of merged pairs that mergepairs makes so in a 
 n/2 + n/4 + n/8 ... 1 this is O(n) 
 
 S(n,m) =  n/2 +  O(log(m))
-S(2,2) =  1              	-- Since the base case is so different I did not really know what to do there.
+S(2,2) =  1              	
 
-T(n,m) = T(n/2,m) + O(n)  + O(log(m)) -- T runs in n/2 half time because of merge pair running O(n) is from the calls to merge 
+T(n,m) = T(n/2,m) + n/2  + O(log(m)) -- T is ran n/2 times n/2 + log(m) are added because of mergepairs 
 T(1,m) = 1
 
 Analyzing S(n, m) O(logm) = x and O(n) = n
