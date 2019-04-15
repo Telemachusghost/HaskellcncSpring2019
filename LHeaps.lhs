@@ -99,30 +99,33 @@ makepass calls merge on each list of merged pairs that mergepairs makes so in a 
 n/2 + n/4 + n/8 ... 1 this is O(n) 
 
 S(n,m) =  n/2 +  O(log(m))
-S(2,2) =  n/2 + O(1)	-- Since the base case is so different I did not really know what to do there.
+S(2,2) =  1              	-- Since the base case is so different I did not really know what to do there.
 
 T(n,m) = T(n/2,m) + O(n)  + O(log(m)) -- T runs in n/2 half time because of merge pair running O(n) is from the calls to merge 
 T(1,m) = 1
 
 Analyzing S(n, m) O(logm) = x and O(n) = n
 
-T(n,m) =  T(n/2, m) + n +  x
-       =  T(n/4, m) + n + n + x + x
-	   =  T(n/8, m) + n + n + n x + x + x
-	   =  T(n/2^k, m) + k * x + k * n  
+There are n/2 merges for each pass
+
+T(n,m) =  T(n/2, m) + n/2 +  x
+       =  T(n/4, m) + n/2 + n/4 + x + x
+	   =  T(n/8, m) + n/2 + n/4 + n/8 + x + x + x
+	   =  T(n/2^k, m) + k * x + n  -- The series n/2 + n/4 + n/8 .. + 1 is O(n)
 
 
 n/2^k = 1
 n = 2^(k)
 log(n) = k 
 
-T(n,m) = T(n/2^k, m) + O(log(m))
-       = T(1, 1) + log(n)*log(m)
-	   = 1 + log(n) * log(m) + log(n)*n
-
+T(1,m) = T(n/2^k, m) + log(m) + n
+       = T(1, 1) + log(n)*log(m) + n
+	   = 1 + log(n) * log(m) + n
+	   = O(n)
  T(1,m) = 1 
 
-This would make the worst case performance of this algorithm nlog(n)
+
+This would make the worst case performance of this algorithm n
  
 
 
