@@ -1,12 +1,12 @@
->  module MyTree
->	(MyTree, empty, isEmpty, insert, find, pre, post, inorder,
+>  module BSTTree
+>	(BSTTree, empty, isEmpty, insert, find, pre, post, inorder,
 >	findMin, findMax, lchild, rchild, delete) where
 >	import Tree
 
->	data MyTree a = Empty | Node a (MyTree a) (MyTree a)
+>	data BSTTree a = Empty | Node a (BSTTree a) (BSTTree a)
 >		deriving (Show)
 
->	instance Tree MyTree where
+>	instance Tree BSTTree where
 >		empty = Empty
 >		isEmpty t = case t of
 >					empty -> True
@@ -56,8 +56,3 @@ You can change that by putting them in to tree type class.
 >				       					newLeft = delete newRoot l
 
 
-Tests
-
->	t1 = foldl (\acc x -> insert x acc) empty [1..10] :: MyTree Int
-
->	t2 = Node 20 (Node 10 (Node 9 Empty Empty) (Node 11 Empty Empty)) (Node 30 (Node 29 Empty Empty) (Node 31 Empty Empty))
