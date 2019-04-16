@@ -1,11 +1,19 @@
 > module Heaps (Heap, empty, isEmpty, findMin, insert, deleteMin, merge) where
 
-I tried to follow along with your code, but I feel like I am struggling with using haskell to implement a lot of things
-because of typing I cant use infinity because of this typing error involving fractional integer
 
 > import Data.Array
 
-> data Heap a = Empty | H (Array Int a) deriving(Show)
+
+> class Heap h where
+>   empty     :: h Int
+>   isEmpty   :: h Int -> Bool
+>   findMin   :: h Int -> Maybe Int
+>   insert    :: Int  -> h Int -> h Int
+>   deleteMin :: h Int -> Maybe (h Int)
+>   merge     ::  h Int -> h Int -> h Int
+
+> type LastUsed = Int
+> data MyHeap a = Empty | H LastUsed  (Array Int a) deriving(Show)
 
 > mkArray xs = array (1,n) $ zip (range (1, n)) xs
 >              where n = length xs
@@ -20,81 +28,119 @@ because of typing I cant use infinity because of this typing error involving fra
 >                                where parIndex = div child 2
 
 
-> bubbleDown current (H heap)	| current >= lst = heap
+> bubbleDown current (H lst heap) | current >= lst = heap
 >	                            | lchild > lst	= heap
 
 >	                            | rchild > lst	= if curVal < lval then heap
->			                                      else bubbleDown lchild $ H (swap current lchild heap)
+>			                                      else bubbleDown lchild $ H lst (swap current lchild heap)
 >	                            | otherwise	= if newCur == current then heap
->			                                  else bubbleDown newCur $ H (swap current newCur heap)
->		                        where
->			                    (fst,lst) = bounds heap
->			                    lchild = 2*current
->			                    rchild = 2*current + 1
->			                    lval = heap!lchild
->			                    rval = heap!rchild
->			                    curVal = heap ! current
->			                    newCur = if curVal < lval && curVal < rval then current else if lval < rval then lchild else rchild
+>			                                  else bubbleDown newCur $ H lst (swap current newCur heap)
+>								where
+>								lchild = 2*current
+>								rchild = 2*current + 1
+>								lval = heap!lchild
+>								rval = heap!rchild
+>								curVal = heap ! current
+>								newCur = if curVal < lval && curVal < rval then current else if lval < rval then lchild else rchild
+
+        
 
 
-> empty :: Ord a => Heap a
-> empty = Empty
 
-> isEmpty :: Ord a => Heap a -> Bool
-> isEmpty heap = case heap of 
->                Empty -> True
->                otherwise -> False 
+> buildHeap lst h     = H lst (buildHeap' lst (lst `div` 2) h)
 
-> findMin :: Ord a => Heap a -> a
-> findMin (H a) = a ! 1           
-
-Returns index of last element used
-
-> findLast arr acc l | acc > l = 0
->                    | arr ! acc == 10^6 = acc 
->                    | otherwise = findLast arr (acc+1) l
-
-> deleteMin :: (Ord a, Num a) => Heap a -> Heap a
-> deleteMin (H heap) = H (bubbleDown 1 $ H (((swap fst lst heap)) // [(lst, 10^6)]))
->                      where (fst,lst) = bounds heap
-
-> buildHeap h     = H (buildHeap' (lst `div` 2) h)
->	            	where
->		        	(fst, lst) = bounds h
-
-> buildHeap' currentSz h
->		                | currentSz > 0 = buildHeap' (currentSz-1) $ bubbleDown currentSz (H h)
->			            | otherwise	= h
+> buildHeap' lst currentSz h
+>		                | currentSz > 0 = buildHeap' lst (currentSz-1) $ bubbleDown currentSz (H lst h)
+>			          | otherwise	= h
 
 
-> heapSort :: (Ord a, Num a) => Heap a -> [a]
-> heapSort heap@(H h) 
 
->     	       | h ! 1 == 10^6   = []
->	           | otherwise	   = findMin heap : (heapSort $ (deleteMin heap))
+> heapSort Empty = []
+> heapSort heap@(H lst h) = min : (heapSort $ rest)
+>                           where Just rest = delMin
+>                                 delMin = deleteMin heap
+>                                 fMin = findMin heap
+>                                 Just min = findMin heap 
 
 
-So I was not really able to get infinity to work correctly so I will just have 10^6 indicate the last used element
-Would the heap you be inserting into only have room for one more node?
+> insert' x (H lst h) = if newLast <= end then  newHeap else error "Heap is full!"
+>                       where
+>                       (fst, end) = bounds h
+>                       newLast = lst+1
+>                       unused =  take (end - newLast) $ repeat maxInt
+>                       newHeap = (buildHeap newLast (h // [(newLast,x)]))
 
-> insert :: Integer -> Heap Integer -> Heap Integer
-> insert _ _ = Empty
+> instance Heap MyHeap where
+>    empty = Empty
 
- insert elem heap@(H h) = if lastElem <= l then fullSortedNewHeap else H (sortedArray // [(lastElem+1, 10^6)])  
-                          where lastElem = findLast h f l
-                                newHeap = h // [(lastElem, elem)]
-                                sortedArray =  (mkArray $ bubbleDown lastElem (H newHeap))
-                                fullSortedNewHeap = H sortedArray
-                                nextEmpty = lastElem+1
-                                (f,l) = bounds h
+>    isEmpty heap = case heap of 
+>                   Empty -> True
+>                   otherwise -> False 
 
-So con both the lists O(n) time
-then heapsort the result
+>    findMin Empty   = Nothing
+>    findMin (H _ a) = Just (a ! 1)  
+ 
+>    deleteMin Empty = Nothing
+>    deleteMin (H 1 _)       = Just Empty
+>    deleteMin (H last heap) = Just (H (last-1) (bubbleDown 1 $ H (last-1) (((swap fst last heap)) )))
+>                              where (fst,_) = bounds heap
 
-> merge :: (Num a, Ord a) => Heap a -> Heap a -> Heap a
-> merge (H h) (H h2) = H (mkArray $ heapSort heap)
->                      where list1 = elems h
->                            list2 = elems h2
->                            comList = list1 ++ list2 
->                            heap    = buildHeap (mkArray comList)
+I wasnt sure if you how you wanted us to grow a merged heap unused space wise so I just added the used up space of both heaps and added that to the merged heap
+This is inefficient, but having to keep track of used space like this in haskell seems clumsy
 
+>    merge (H lst1 h) (H lst2 h2) = H newLast heap
+>                                   where 
+>                                         list1   = take lst1 $ elems h
+>                                         list2   = take lst2 $ elems h2
+>                                         unused  = take newLast $ repeat maxInt
+>                                         comList = list1 ++ list2 ++ unused 
+>                                         tHeap   = buildHeap newLast (mkArray comList)
+>                                         heap    =  mkArray ( (heapSort tHeap) ++ unused ) 
+>                                         newLast = lst1 + lst2
+>                                         
+
+>    insert x h = insert' x h
+
+testing
+
+> maxInt = maxBound :: Int
+
+> t1 = buildHeap 5 (mkArray [2,6,-1,20,3,maxInt,maxInt,maxInt]) :: MyHeap Int-- This wont organize beyond index 5
+
+*Heaps> t1
+H 5 (array (1,8) [(1,-1),(2,3),(3,2),(4,20),(5,6),(6,-500),(7,43),(8,42)])
+*Heaps> heapSort t1
+[-1,2,3,6,20]
+
+
+
+> t2 = buildHeap 8 (mkArray [2,6,-1,20,3,-500,43,42]) :: MyHeap Int -- Sorts full heap
+
+*Heaps> heapSort t2
+[-500,-1,2,3,6,20,42,43]
+
+> t3 = buildHeap 1 (mkArray ([2] ++ (take 7 $ repeat maxInt))) :: MyHeap Int -- Min test
+
+*Heaps> heapSort t3
+[2]
+
+merging/insertion tests
+
+> t4 = merge t1 t3
+
+*Heaps> t4
+H 6 (array (1,12) [(1,-1),(2,2),(3,2),(4,3),(5,6),(6,20),(7,9223372036854775807),(8,9223372036854775807),(9,9223372036854775807),(10,9223372036854775807),(11,9223372036854775807),(12,9223372036854775807)])
+
+*Heaps> insert 42 t4
+H 7 (array (1,12) [(1,-1),(2,2),(3,2),(4,3),(5,6),(6,20),(7,42),(8,9223372036854775807),(9,9223372036854775807),(10,9223372036854775807),(11,9223372036854775807),(12,9223372036854775807)])
+
+Heap is Full!
+
+*Heaps> let r = buildHeap 1 $ mkArray [2,maxInt]
+*Heaps> insert 4 . insert 2 $ r
+*** Exception: Heap is full!
+CallStack (from HasCallStack):
+  error, called at Heaps.lhs:66:62 in main:Heaps
+*Heaps>
+
+  
