@@ -78,6 +78,8 @@ This was my second attempt after notes from Sherri
 
 > grow h lst = mkArray ((elems h) ++ (take (lst*2) $ repeat maxInt))
 
+
+
 > instance Heap MyHeap where
 >    empty = Empty
 
@@ -107,7 +109,7 @@ This is inefficient, but having to keep track of used space like this in haskell
 >                                         newLast = lst1 + lst2
 >                                         
 
->    insert x h = insert' x h
+>    insert x h = insert'' x h
 
 testing
 
