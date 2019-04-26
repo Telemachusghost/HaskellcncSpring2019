@@ -62,6 +62,7 @@
 >                                 fMin = findMin heap
 >                                 Just min = findMin heap 
 
+This was my first attempt
 
 > insert' x (H lst h) = if newLast <= end then  newHeap else error "Heap is full!"
 >                       where
@@ -69,6 +70,13 @@
 >                       newLast = lst+1
 >                       unused =  take (end - newLast) $ repeat maxInt
 >                       newHeap = (buildHeap newLast (h // [(newLast,x)]))
+
+This was my second attempt after notes from Sherri
+
+> insert'' x (H lst h) = if lst == lst2 then H (lst+1) (bubbleUp (lst+1) ((grow h lst) // [(lst+1,x)]))   else (H (lst+1) (bubbleUp (lst+1) (h // [(lst+1,x)]))) 
+>                        where (fst,lst2) = bounds h
+
+> grow h lst = mkArray ((elems h) ++ (take (lst*2) $ repeat maxInt))
 
 > instance Heap MyHeap where
 >    empty = Empty
