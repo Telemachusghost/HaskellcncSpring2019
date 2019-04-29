@@ -5,12 +5,12 @@
 
 
 > class Heap h where
->   empty     :: h Int
->   isEmpty   :: h Int -> Bool
->   findMin   :: h Int -> Maybe Int
->   insert    :: Int  -> h Int -> h Int
->   deleteMin :: h Int -> Maybe (h Int)
->   merge     ::  h Int -> h Int -> h Int
+>   empty     :: Ord a => h a
+>   isEmpty   :: Ord a => h a -> Bool
+>   findMin   :: Ord a => h a -> Maybe a
+>   insert    :: Ord a => a  -> h a -> h a
+>   deleteMin :: Ord a => h a -> Maybe (h a)
+>   merge     ::  Ord a => h a -> h a -> h a
 
 > type LastUsed = Int
 > data MyHeap a = Empty | H LastUsed  (Array Int a) deriving(Show)
@@ -68,15 +68,16 @@ This was my first attempt
 >                       where
 >                       (fst, end) = bounds h
 >                       newLast = lst+1
->                       unused =  take (end - newLast) $ repeat maxInt
+>                       unused =  take (end - newLast) $ repeat x
 >                       newHeap = (buildHeap newLast (h // [(newLast,x)]))
 
 This was my second attempt after notes from Sherri
 
+> insert'' x Empty     = (H 1 (mkArray [x]))  
 > insert'' x (H lst h) = if lst == lst2 then H (lst+1) (bubbleUp (lst+1) ((grow h lst) // [(lst+1,x)]))   else (H (lst+1) (bubbleUp (lst+1) (h // [(lst+1,x)]))) 
 >                        where (fst,lst2) = bounds h
 
-> grow h lst = mkArray ((elems h) ++ (take (lst*2) $ repeat maxInt))
+> grow h lst = mkArray ((elems h) ++ (take (lst*2) $ repeat (h ! 0)))
 
 
 
@@ -102,7 +103,7 @@ This is inefficient, but having to keep track of used space like this in haskell
 >                                   where 
 >                                         list1   = take lst1 $ elems h
 >                                         list2   = take lst2 $ elems h2
->                                         unused  = take newLast $ repeat maxInt
+>                                         unused  = take newLast $ repeat (h ! 0)
 >                                         comList = list1 ++ list2 ++ unused 
 >                                         tHeap   = buildHeap newLast (mkArray comList)
 >                                         heap    =  mkArray ( (heapSort tHeap) ++ unused ) 
