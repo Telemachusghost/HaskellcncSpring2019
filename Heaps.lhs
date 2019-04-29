@@ -22,7 +22,7 @@
 >              where tmp1 = h!i
 >                    tmp2 = h!j
 
-> bubbleUp child h | child <= 1 = h
+> bubbleUp child h | child == 1 = h
 >                  | otherwise = if h ! parIndex < h ! child then h
 >                                else bubbleUp parIndex $ swap parIndex child h
 >                                where parIndex = div child 2
@@ -73,11 +73,11 @@ This was my first attempt
 
 This was my second attempt after notes from Sherri
 
-> insert'' x Empty     = (H 1 (mkArray [x]))  
+> insert'' x Empty     = (H 1 (mkArray [x]))
 > insert'' x (H lst h) = if lst == lst2 then H (lst+1) (bubbleUp (lst+1) ((grow h lst) // [(lst+1,x)]))   else (H (lst+1) (bubbleUp (lst+1) (h // [(lst+1,x)]))) 
 >                        where (fst,lst2) = bounds h
 
-> grow h lst = mkArray ((elems h) ++ (take (lst*2) $ repeat (h ! 0)))
+> grow h lst = mkArray ((elems h) ++ (take (lst*2) $ repeat (h ! 1)))
 
 
 
