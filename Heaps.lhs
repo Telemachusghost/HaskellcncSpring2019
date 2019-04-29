@@ -103,7 +103,7 @@ This is inefficient, but having to keep track of used space like this in haskell
 >                                   where 
 >                                         list1   = take lst1 $ elems h
 >                                         list2   = take lst2 $ elems h2
->                                         unused  = take newLast $ repeat (h ! 0)
+>                                         unused  = take newLast $ repeat (h ! 1)
 >                                         comList = list1 ++ list2 ++ unused 
 >                                         tHeap   = buildHeap newLast (mkArray comList)
 >                                         heap    =  mkArray ( (heapSort tHeap) ++ unused ) 
