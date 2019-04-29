@@ -1,4 +1,4 @@
-> module Heaps (Heap, empty, isEmpty, findMin, insert, deleteMin, merge) where
+> module Heaps (Heap(..)) where
 
 
 > import Data.Array
