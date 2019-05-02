@@ -11,21 +11,29 @@ import qualified LHeaps as H
 
 > data Heap = E | NE Int H.Heap deriving (Show)   -- the Int is the minimum element
 
-> empty :: Heap
-> empty = E
+> class EMHeap h where
+>   empty     ::  h
+>   isEmpty   ::  h  -> Bool
+>   findMin   ::  h -> Maybe Int
+>   insert    ::  Int  -> h  -> h 
+>   deleteMin ::  h  -> Maybe (h )
+>   merge     ::   h  -> h  -> h 
 
-> isEmpty :: Heap -> Bool
-> isEmpty h = case h of
+
+> empty' = E
+
+
+> isEmpty' h = case h of
 >             E    -> True
 >             h    -> True
 
 
 Insert new elem in then you need to find new min with H.findMin and and replace explicitmin with that
 
-> insert :: Int -> Heap -> Heap
-> insert x E          = NE x singleton
+
+> insert' x E          = NE x singleton
 >                       where singleton = H.insert x H.empty
-> insert x (NE min h) = NE newMin newIHeap
+> insert' x (NE min h) = NE newMin newIHeap
 >                       where
 >                            newIHeap = H.insert x h
 >                            Just newMin   = H.findMin newIHeap
@@ -33,36 +41,43 @@ Insert new elem in then you need to find new min with H.findMin and and replace 
 merge the two heaps. then whatever min is smaller among the two make that the new min. Finding the min of the merged heaps is O(1) 
 even with Bheaps
 
-> merge :: Heap -> Heap -> Heap
 
-> merge E h@(NE _ heap1) = NE min mergedHeaps 
+
+> merge' E h@(NE _ heap1) = NE min mergedHeaps 
 >                          where mergedHeaps = H.merge H.empty heap1 
 >                                Just min = findMin h
 
-> merge h@(NE _ heap1) E = NE min mergedHeaps 
+> merge' h@(NE _ heap1) E = NE min mergedHeaps 
 >                          where mergedHeaps = H.merge H.empty heap1 
 >                                Just min = findMin h
 
-> merge h1@(NE _ heap1) h2@(NE _ heap2) = if min1 <= min2 then NE min1 mergedHeaps else NE min2 mergedHeaps  
->                                         where mergedHeaps = H.merge heap1 heap2
->                                               Just min1 = findMin h1
->                                               Just min2 = findMin h2 
+> merge' h1@(NE _ heap1) h2@(NE _ heap2) = if min1 <= min2 then NE min1 mergedHeaps else NE min2 mergedHeaps  
+>                                          where mergedHeaps = H.merge heap1 heap2
+>                                                Just min1 = findMin h1
+>                                                Just min2 = findMin h2 
 
 
-> findMin :: Heap -> Maybe Int
-> findMin E          = Nothing
-> findMin (NE min _) = Just min
+
+> findMin' E          = Nothing
+> findMin' (NE min _) = Just min
 
 
 Delete the min then return a new heap with the new min of the internal heap
 
 If Internalheap is empty after deleting the min then return the empty heap
 
-> deleteMin :: Heap -> Maybe Heap
-> deleteMin E = Nothing
-> deleteMin h@(NE min heap) = if newMin == Nothing then Just E else Just (NE newMin' newHeap) 
->                             where 
->                             Just newHeap = H.deleteMin heap
->                             newMin  = H.findMin newHeap 
->                             Just newMin' = H.findMin newHeap
 
+> deleteMin' E = Nothing
+> deleteMin' h@(NE min heap) = if newMin == Nothing then Just E else Just (NE newMin' newHeap) 
+>                              where 
+>                              Just newHeap = H.deleteMin heap
+>                              newMin  = H.findMin newHeap 
+>                              Just newMin' = H.findMin newHeap
+
+> instance EMHeap Heap where
+>     empty = empty'
+>     isEmpty = isEmpty'
+>     merge   = merge'
+>     insert = insert'
+>     findMin = findMin'
+>     deleteMin = deleteMin' 
