@@ -42,13 +42,21 @@
 >	removeMinTree (WrapHeap (t:ts)) =  let (t', ts') = removeMinTree (WrapHeap ts)
 >                                      in if rootLess t t' then (t,ts) else (t', t:ts')
 
-Because of the implemenation it causes issues with deletemin because rank is not associated with an actual tree but a heap
-this is a function to take a tree and create an internalheap from its children
 
->	getIHeapFromChildren :: (Rank, Tree) -> InternalHeap
->	getIHeapFromChildren (r, (Node x ts) ) = treeFunctions <*> [topRank..0]
->                                            where treeFunctions =  map ( \t r -> (r, t)) ts  
->                                                  topRank       = r-1
+This Function is used for deleteMin since we dont have rank information for each tree in this interpretation we need to add rank info in log(r) steps
+then do a merge O(log(n)) 
+                          
+So you are going to have log(r) + 1  trees for r > 0 after deleting the deleteMin
+
+So converting the trees to the form of (r,t) would be O(log(r)) then doing a merge  that would be O(log(n)) 
+
+This uses reverse which I assume is not a problem since it is what Okasaki recommended
+
+>	mergeChildrenh _ []      = []
+>	mergeChildrenh  r (t:ts) = ((r `div` 2,t):(mergeChildrenh newR ts))
+>	                           where newR = r `div` 2
+>	mergeChildren _ [] h = h 
+>	mergeChildren r ts heap = merge (WrapHeap $ reverse (mergeChildrenh r ts)) heap  
 
 {-- External Interface --------------------------------------------------}
 
@@ -81,10 +89,10 @@ this is a function to take a tree and create an internalheap from its children
 >	deleteMin :: Heap -> Maybe Heap
 >	deleteMin h = case isEmpty h of
 >                 True  -> Nothing
->                 False -> Just (merge childrenHeap remainingHeap)
->                          where childrenHeap  = WrapHeap . reverse $ getIHeapFromChildren p
+>                 False -> Just (mergeChildren r ts3  remainingHeap)
+>                          where 
 >                                remainingHeap = WrapHeap ts2
->                                (p, ts2) = removeMinTree h
+>                                ((r,Node _ ts3), ts2) = removeMinTree h
 
 
 
