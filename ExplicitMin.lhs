@@ -9,15 +9,15 @@
 
 import qualified LHeaps as H 
 
-> data Heap = E | NE Int H.Heap deriving (Show)   -- the Int is the minimum element
+> data Heap a = E | NE a (H.Heap a) deriving (Show)   -- the Int is the minimum element
 
 > class EMHeap h where
->   empty     ::  h
->   isEmpty   ::  h  -> Bool
->   findMin   ::  h -> Maybe Int
->   insert    ::  Int  -> h  -> h 
->   deleteMin ::  h  -> Maybe (h )
->   merge     ::   h  -> h  -> h 
+>   empty     :: Ord a =>  h a
+>   isEmpty   :: Ord a =>  h a -> Bool
+>   findMin   :: Ord a => h a -> Maybe a
+>   insert    :: Ord a => a  -> h a -> h a
+>   deleteMin :: Ord a => h a  -> Maybe (h a)
+>   merge     :: Ord a => h a  -> h a  -> h a
 
 
 > empty' = E
