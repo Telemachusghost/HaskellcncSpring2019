@@ -7,11 +7,11 @@
 
 > import qualified BHeaps as H
 
-import qualified LHeaps as H 
+ import qualified LHeaps as H 
 
 > data Heap a = E | NE a (H.Heap a) deriving (Show)   -- the Int is the minimum element
 
-> class EMHeap h where
+> class EMHeap h  where
 >   empty     :: Ord a =>  h a
 >   isEmpty   :: Ord a =>  h a -> Bool
 >   findMin   :: Ord a => h a -> Maybe a
