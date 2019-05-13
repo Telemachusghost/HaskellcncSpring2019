@@ -3,8 +3,8 @@
 >	import RedBlackTrees 
 >	import RBTrees2 (Balance, balanceLL, balanceLR, balanceRL, balanceRR)
 
->	insert :: Int -> Tree -> Tree
->	insert x t = T B l y r
+>	insert :: Tree -> Int -> Tree
+>	insert t x = T B l y r
 >		where
 >			((T _ l y r),_) = ins x t
 
@@ -18,5 +18,8 @@
 >	                    (treeR,(bL2,bR2)) = ins x r
 
 
-*RBTrees3> RBTrees3.insert (100) $ RBTrees3.insert (-50) $ RBTrees3.insert (50) $ RBTrees3.insert (-20) $ RBTrees3.insert 20 $ RBTrees3.insert 5 $ empty
-T B (T B (T R E (-50) E) (-20) E) 5 (T B E 20 (T R E 50 (T R E 100 E)))
+*RBTrees3>  buildRandom (RBTrees2.insert ) 5
+T B (T B E 2031 (T R E 4316 E)) 5638 (T B E 8157 (T R E 9868 E))
+
+*RBTrees3>  buildRandom (RBTrees2.insert ) 10
+T B (T R (T B (T R E 1564 E) 2031 E) 2961 (T B E 4316 (T R E 5420 E))) 5638 (T R (T B E 5728 E) 8157 (T B E 8864 (T R E 9868 E)))

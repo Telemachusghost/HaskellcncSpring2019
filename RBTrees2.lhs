@@ -3,8 +3,8 @@
 >	import RedBlackTrees 
 >	import Prelude hiding (Left, Right)
 
->	insert :: Int -> Tree -> Tree
->	insert x t = T B l y r
+>	insert :: Tree -> Int -> Tree
+>	insert t x = T B l y r
 >		where
 >			((T _ l y r),_) = ins x t []
 
@@ -59,7 +59,8 @@
 >	balanceID a b c d = (T a b c d)
 
 
-*RBTrees2> RBTrees2.insert (-50) $ RBTrees2.insert 25 $ RBTrees2.insert (1) $  RBTrees2.insert 90 $  RBTrees2.insert (-4) $ RBTrees2.insert 45 $ empty
-T B (T B (T R E (-50) E) (-4) E) 1 (T B (T R E 25 E) 45 (T R E 90 E))
-(0.01 secs, 136,512 bytes)
+*RBTrees2>  buildRandom (RBTrees2.insert ) 5
+T B (T B E 2031 (T R E 4316 E)) 5638 (T B E 8157 (T R E 9868 E))
+
+T B (T R (T B (T R E 1564 E) 2031 E) 2961 (T B E 4316 (T R E 5420 E))) 5638 (T R (T B E 5728 E) 8157 (T B E 8864 (T R E 9868 E)))
 

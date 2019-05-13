@@ -158,7 +158,7 @@ import Debug
 
 >	randomInts n =
 >	  let seed = mkStdGen 0 in
->	  randomRs (0, 10000) seed
+>	  take n $ randomRs (0, 10000) seed
 
 
 >	build fInsert ns =
