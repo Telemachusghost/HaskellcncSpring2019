@@ -50,6 +50,7 @@ the Haskell interpreter to get this result):
 e) findMin and deleteMin were not implemented in LHeaps. Implement
 them. Assume you can import LHeaps.
 
+****************Answers************
 
 a) Rank keeps track of the Leftist heap property. 
    The leftist heap property is the property that the left subtree is always greater than or equal to the right. This allows for faster merging.
@@ -137,6 +138,7 @@ WrapHeap [(2,Node 1 [Node 3 [Node 5 []], Node 2 []])]
 
 c) In BinomialHeaps.lhs explain how the representation maintains the
 Heap property. In particular, explain how insert uses link and insertTree, 
+
 
 Insert starts the process by simply calling insertTree with the element in an internal heap of rank 0
 

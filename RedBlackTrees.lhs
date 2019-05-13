@@ -6,7 +6,7 @@ import List
 
 import Debug
 
-	import System.Random
+>	import System.Random
 
 >	data Color = R | B
 >		deriving (Show, Eq)
@@ -156,15 +156,15 @@ import Debug
 
 ------------------------------------------------------------------------------
 
-	randomInts n =
-	  let seed = mkStdGen 0 in
-	  randomRs (0, 10000) seed
+>	randomInts n =
+>	  let seed = mkStdGen 0 in
+>	  randomRs (0, 10000) seed
 
 
-	build fInsert ns =
-	     checkRet "[build]" rbPlus $ foldl fInsert empty ns
+>	build fInsert ns =
+>	     checkRet "[build]" rbPlus $ foldl fInsert empty ns
 
-	buildRandom fInsert n = build fInsert (randomInts n)
+>	buildRandom fInsert n = build fInsert (randomInts n)
 
 -- NOTE: working around bug in REPL
 
