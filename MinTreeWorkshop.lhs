@@ -307,5 +307,21 @@ That is a lot better. Also bigger lists which wouldn't even run on my laptop wit
 
 
 
+Attempt at Extra credit Dynamic Programming:
+
+> prfxs list  = L.inits list `zip` L.tails list 
+
+> minT []     = []
+> minT (a:[]) = [Leaf a]
+> minT (a:b:[]) = [Fork (Leaf a) (Leaf b)]
+> minT (a:b:xs) = [Fork (Leaf a) ]
+
+
+
+> minDP list = 
+>             where
+>             n = length list
+>             f = minT 
+>             r = listArray (0,n) (map f (prfxs list))
 
 
