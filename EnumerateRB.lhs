@@ -40,9 +40,11 @@ what impact that has on performance.
 
 >	noRedRed t = case t of
 >	  E                   -> True
+>	  T R E _ E           -> False
 >	  T R (T R _ _ _) _ _ -> False
 >	  T R _ _ (T R _ _ _) -> False
 >	  T _ l _ r           -> noRedRed l && noRedRed r
+    
 
 	  T _ l _ r           -> List.all noRedRed [l, r]
 
@@ -50,41 +52,60 @@ what impact that has on performance.
 
 >	rbTrees :: Int -> [Tree]
 >	rbTrees 0  = [E]
->	rbTrees bh = validTrees
+>	rbTrees bh = vTrees
 >	             where
->	             validTrees = foldl (\acc x -> if (check bh x) then x:acc else acc) [] (rbTrees' (bh))
+>	             vTrees = validTrees bh (rbTrees' bh)
 
+>	validTrees bh trees = foldl (\acc x -> if (check bh x) then x:acc else acc) [] trees
 
 ------------------------------------------------------------------------------
 
-I would like to see if there is a better way to not have so many intermediary data structures.
-
-Having difficulty getting it to work correctly after black height 2
-Maybe I should build the tree from the bottom up?
-
-Ok, I think this is working correctly now. I can calculate 
-
+Yeah, I am just having trouble figuring out how to get the right cases and form the correct trees with the caveats required.
 
 
 >	rbTrees' :: Int -> [Tree]
 >	rbTrees' 0  = [E]
->	rbTrees' bh = allTrees 
+>	rbTrees' bh = validTrees bh allTrees 
 >	              where 
->	              diffL = cartProdWith newTreeL oneBlack ((rbTrees' (bh - 1)))
->	              allTrees = cartProdWith newTreeR diffL (rbTrees' (bh - 1))
->	              oneBlack = [(T B E 0 E), (T R (T B E 0 E) 0 (T B E 0 E))]
+>	              allTrees = concatMap (\x -> buildTrees x (rbTrees' (bh - 1))) oneBlack
+>	              oneBlack = [(T B E 0 E), (T B (T R E 0 E) 0 (T R E 0 E)), (T B (T R E 0 E) 0 E), (T B E 0 (T R E 0 E))]
 
 >	cartProdWith f xs ys = concat $ map (\x -> foldF x ys) xs 
 >	                       where
 >	                       foldF x ys2 =(foldr (\y acc ->  (f (x,y)):acc) [] ys2)                      
 
->	newTreeL ((T c E n r),ex) = (T c ex n r)
->	newTreeL ((T c (T c2 l n2 r2) n (T c3 l2 n3 r3)),ex) = (T c (T c2 ex n2 r2) n (T c3 ex n3 r3))
->	newTreeL ((T c (T c2 l n2 r) n E),ex) = (T c (T c2 ex n2 r) n E)
+So basically I will just work through the cases with this function buildTrees in order to get all the permutations
+
+>	buildTrees t@(T B E n E) ts = newTree [t] ts
+
+>	buildTrees t@(T B t2@(T R E n2 E) n E) ts = allTrees 
+>	                                            where
+>	                                            newTreesL   = newTree [t2] ts
+>	                                            rootTreesL  = cartProdWith newTreeL [(T B E n E)] newTreesL
+>	                                            allTrees    = cartProdWith newTreeR rootTreesL ts  
+
+>	buildTrees t@(T B E n t2@(T R E n2 E)) ts = allTrees 
+>	                                            where
+>	                                            newTreesR   = newTree [t2] ts
+>	                                            rootTreesR  = cartProdWith newTreeR [(T B E n E)] newTreesR
+>	                                            allTrees    = cartProdWith newTreeL rootTreesR ts
+
+>	buildTrees t@(T B t2@(T R E n2 E) n t3@(T R E n3 E)) ts = allTrees 
+>	                                                          where
+>	                                                          newTreesL   = newTree [t2] ts
+>	                                                          newTreesR   = newTree [t3] ts
+>	                                                          rootTreesL  = cartProdWith newTreeL [(T B E n E)] newTreesL
+>	                                                          allTrees    = cartProdWith newTreeR rootTreesL newTreesR
+
+>	newTree t ts = trees
+>	               where
+>	               lts = cartProdWith newTreeL t ts
+>	               trees = cartProdWith newTreeR lts ts
+
+>	newTreeL ((T c E n r),ex) = (T c ex n r) 
 
 >	newTreeR ((T c l n E),ex) = (T c l n ex)
->	newTreeR ((T c (T c2 l n2 r) n (T c3 l2 n3 r2)),ex) =  (T c (T c2 l n2 ex)  n (T c3 l2 n3 ex))
->	newTreeR ((T c E n (T c2 l n2 r)),ex) =  (T c E  n (T c2 l n2 ex))
+
 
 Sanity Checks
 
@@ -97,9 +118,9 @@ Sanity Checks
 (0.00 secs, 89,496 bytes)
 
 
-*EnumerateRB>  map  (length . rbTrees) [0..3]
-[1,1,4,64]
-(0.01 secs, 1,255,640 bytes)
+*EnumerateRB> map  (length . rbTrees) [0..3]
+[1,1,4,400]
+(0.07 secs, 16,077,256 bytes)
 
  
 
